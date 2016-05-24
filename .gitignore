@@ -23,3 +23,7 @@ docs/
 
 .idea/
 *.iml
+.gitignore
+typings
+typings.json
+jsconfig.json
