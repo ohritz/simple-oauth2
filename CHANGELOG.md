@@ -2,6 +2,7 @@
 
 ## Version Next
 * Added standard debug logger.
+* Does not override expires_at property if passed into accessToken.create.
 
 ## v0.6.0 (04 April 2016)
 * Added optional sending support to the body auth params.

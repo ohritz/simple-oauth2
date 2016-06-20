@@ -2,6 +2,9 @@ var credentials = { clientID: 'client-id', clientSecret: 'client-secret', site: 
   oauth2 = require('./../index.js')(credentials),
   qs = require('querystring'),
   startOfYesterday = require('date-fns/start_of_yesterday'),
+  isDate = require('date-fns/is_date'),
+  isValid = require('date-fns/is_valid'),
+  isEqual = require('date-fns/is_equal'),
   nock = require('nock');
 
 var request,
@@ -50,10 +53,31 @@ describe('oauth2.accessToken', function () {
     });
   });
 
+  describe('#create with expires_at', function () {
+    it('uses the set expires_at property', function () {
+      token.token.expires_at = startOfYesterday();
+      var expiredToken = oauth2.accessToken.create(token.token);
+      isValid(expiredToken.token.expires_at).should.be.true();
+      isEqual(expiredToken.token.expires_at, token.token.expires_at).should.be.true();
+    });
+
+    it('parses a set expires_at property', function () {
+      var yesterday = startOfYesterday();
+      token.token.expires_at = yesterday.toString();
+      var expiredToken = oauth2.accessToken.create(token.token);
+      isValid(expiredToken.token.expires_at).should.be.true();
+      isEqual(expiredToken.token.expires_at, token.token.expires_at).should.be.true();
+    });
+
+    it('create its own date by default', function () {
+      isValid(token.token.expires_at).should.be.true();
+    });
+  });
+
   describe('when not expired', function () {
     it('returns false', function () {
-      token.expired().should.be.false;
-      tokenPromise.expired().should.be.false;
+      token.expired().should.be.false();
+      tokenPromise.expired().should.be.false();
     });
   });
 
@@ -64,8 +88,8 @@ describe('oauth2.accessToken', function () {
     });
 
     it('returns false', function () {
-      token.expired().should.be.true;
-      tokenPromise.expired().should.be.true;
+      token.expired().should.be.true();
+      tokenPromise.expired().should.be.true();
     });
   });
 
